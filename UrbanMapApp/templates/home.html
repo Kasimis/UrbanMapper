@@ -1,4 +1,44 @@
-{% extends "base.html" %} {% block title %} Home Page {% endblock %}
+{% extends 'base.html' %}
+{% block title %}Χάρτης Αστικών Προβλημάτων{% endblock %}
+
 {% block content %}
-<p>this is home page</p>
+    <h1 class="mb-4">Χαρτογράφηση Αστικών Προβλημάτων</h1>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    Διαδραστικός Χάρτης
+                </div>
+
+                <div id="map" style="height: 600px; width: 100%;"></div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    Αναφορά Νέου Προβλήματος
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Η φόρμα υποβολής θα εμφανιστεί εδώ.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+
+<!-- map script here -->
+<script>
+function initMap() {
+    const athens = { lat: 37.983810, lng: 23.727539 };
+    const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 13,
+        center: athens,
+    });
+}
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap"></script>
+
 {% endblock %}

@@ -1,5 +1,9 @@
-from django.shortcuts import render,HttpResponse
+from django.shortcuts import render
+from django.conf import settings
 
-# Create your views here.
 def home(request):
-    return render(request,'home.html')
+    context = {
+        'page_title': 'Χάρτης Αστικών Προβλημάτων',
+        'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY,
+    }
+    return render(request, 'home.html', context)
