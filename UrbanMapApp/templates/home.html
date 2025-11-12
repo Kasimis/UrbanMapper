@@ -1,25 +1,43 @@
 {% extends 'base.html' %}
-{% block title %}Χάρτης Αστικών Προβλημάτων{% endblock %}
+{% block title %}Urban Problem Mapper{% endblock %}
 
 {% block content %}
-    <h1 class="mb-4">Χαρτογράφηση Αστικών Προβλημάτων</h1>
+    <h1 class="mb-4">Urban Problem Mapping</h1>
     <div class="row">
+        <!-- Map container -->
         <div class="col-lg-8">
             <div class="card shadow-sm">
                 <div class="card-header">
-                    Διαδραστικός Χάρτης
+                    Interactive Map
                 </div>
-
                 <div id="map" style="height: 600px; width: 100%;"></div>
             </div>
         </div>
+
+        <!-- submission form -->
         <div class="col-lg-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    Αναφορά Νέου Προβλήματος
+                    Submit a New Report
                 </div>
                 <div class="card-body">
-                    <p class="text-muted">Η φόρμα υποβολής θα εμφανιστεί εδώ.</p>
+                    <form id="reportForm" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %} <!-- Very important for Django's security -->
+
+                        <p class="text-center text-muted">Click on the map to select a location.</p>
+
+
+                        <input type="hidden" name="latitude" id="id_latitude">
+                        <input type="hidden" name="longitude" id="id_longitude">
+                        <div class="mb-3">
+                            <label for="id_title" class="form-label">Title</label>
+                            <input type="text" name="title" id="id_title" class="form-control" required>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" disabled>Submit Report</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -29,16 +47,43 @@
 {% block scripts %}
 {{ block.super }}
 
-<!-- map script here -->
+<!-- JavaScript for Google Maps functionality -->
 <script>
-function initMap() {
-    const athens = { lat: 37.983810, lng: 23.727539 };
-    const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 13,
-        center: athens,
-    });
-}
+    let map;
+    let marker = null;
+    function initMap() {
+        const athens = { lat: 37.983810, lng: 23.727539 };
+
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 13,
+            center: athens,
+        });
+
+        map.addListener("click", (event) => {
+            placeMarker(event.latLng);
+        });
+    }
+
+    // marker moving function
+    function placeMarker(location) {
+        // If a marker already exists, remove it from the map
+        if (marker) {
+            marker.setMap(null);
+        }
+        marker = new google.maps.Marker({
+            position: location,
+            map: map,
+        });
+        const lat = location.lat();
+        const lng = location.lng();
+        document.getElementById("id_latitude").value = lat;
+        document.getElementById("id_longitude").value = lng;
+        document.querySelector('#reportForm button[type="submit"]').disabled = false;
+    }
 </script>
+
+<!-- Load the Google Maps API using the secure key from our view -->
 <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap"></script>
 
 {% endblock %}
