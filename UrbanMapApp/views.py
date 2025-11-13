@@ -1,11 +1,14 @@
 # UrbanMapApp/views.py
-
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.conf import settings
-from .models import Report, Category
+
+from .models import Report, Category, Vote
 import json
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.http import JsonResponse
+
 
 def home(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -46,6 +49,7 @@ def home(request):
             photo_url = report.photo.url if report.photo else ""
 
             reports_data.append({
+                'id': report.id,
                 'lat': float(report.latitude),
                 'lng': float(report.longitude),
                 'title': report.title,
@@ -53,6 +57,7 @@ def home(request):
                 'category': category_name,
                 'photo_url': photo_url,
                 'status': report.status,
+                'vote_count': report.votes.count(),
             })
 
         reports_json = json.dumps(reports_data)
@@ -76,3 +81,32 @@ def register(request):
         form = UserCreationForm()
 
     return render(request, 'register.html', {'form': form})
+
+
+@login_required
+def upvote_report(request, report_id):
+    if request.method == 'POST':
+        try:
+            report = Report.objects.get(id=report_id)
+        except Report.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Report not found.'}, status=404)
+
+        #user already voted.
+        vote, created = Vote.objects.get_or_create(user=request.user, report=report)
+        if not created:
+            # If the vote already existed (was not created), delete it.
+            vote.delete()
+            action = 'unvoted'
+        else:
+            # If the vote was just created.
+            action = 'voted'
+        vote_count = report.votes.count()
+
+        # 'created' is True if a new vote was made, False if it already existed.
+        return JsonResponse({
+            'success': True,
+            'vote_count': vote_count,
+            'action': action
+        })
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method.'}, status=400)

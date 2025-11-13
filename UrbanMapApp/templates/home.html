@@ -66,12 +66,11 @@
 {% block scripts %}
 {{ block.super }}
 
-<!-- JavaScript for Google Maps functionality -->
 <script>
     let map;
     let submissionMarker = null;
     let infoWindow;
-     const iconUrls = {
+    const iconUrls = {
             'PENDING': 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
             'IN_PROGRESS': 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
             'RESOLVED': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
@@ -84,7 +83,7 @@
             center: athens,
         });
 
-        infoWindow = new google.maps.InfoWindow();
+        infoWindow = new google.maps.InfoWindow({ closeButton: true });
 
 
         map.addListener("click", (event) => {
@@ -102,16 +101,29 @@
                 title: report.title,
                 icon: iconUrl
             });
-            //marker info window
-            const contentString = `
-                <div>
-                    <h5>${report.title}</h5>
-                    <p><strong>Category:</strong> ${report.category}</p>
-                    <p>${report.description}</p>
-                    <img src="${report.photo_url}" alt="${report.title}" style="max-width: 200px; height: auto;">
+
+            const upvoteSection = `
+                <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-primary upvote-btn" data-report-id="${report.id}">
+                        Vote
+                    </button>
+                    <span id="vote-count-${report.id}" class="ms-2 fw-bold">${report.vote_count}</span> votes
                 </div>
             `;
 
+            // We check if the user is logged in to decide if we show the upvote button
+            const finalUpvoteHtml = {% if user.is_authenticated %} upvoteSection {% else %} '' {% endif %};
+
+            // We declare contentString ONLY ONCE
+            const contentString = `
+                <div>
+                    <h5>${report.title} <span class="badge" style="background-color: ${iconUrl.includes('red') ? 'red' : (iconUrl.includes('yellow') ? 'orange' : 'green')}">${report.status}</span></h5>
+                    <p><strong>Category:</strong> ${report.category}</p>
+                    <p>${report.description}</p>
+                    ${report.photo_url ? `<img src="${report.photo_url}" alt="${report.title}" style="max-width: 200px; height: auto;">` : ''}
+                    ${finalUpvoteHtml}
+                </div>
+            `;
             marker.addListener('click', () => {
                 infoWindow.setContent(contentString);
                 infoWindow.open(map, marker);
@@ -132,6 +144,50 @@
         document.getElementById("id_longitude").value = location.lng();
         document.querySelector('#reportForm button[type="submit"]').disabled = false;
     }
+
+    document.addEventListener('click', function(event) {
+    if (event.target && event.target.classList.contains('upvote-btn')) {
+        const reportId = event.target.dataset.reportId;
+
+        // We find the hidden input field that Django's {% csrf_token %} tag creates
+        const csrfToken = document.querySelector('form#reportForm input[name=csrfmiddlewaretoken]').value;
+
+        fetch(`/upvote/${reportId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Update the vote count display
+                document.getElementById(`vote-count-${reportId}`).innerText = data.vote_count;
+
+                // Toggle button appearance based on the action
+                if (data.action === 'voted') {
+                    event.target.classList.remove('btn-outline-primary');
+                    event.target.classList.add('btn-primary');
+                    event.target.innerHTML = "Unvote";
+                } else { // 'unvoted'
+                    event.target.classList.remove('btn-primary');
+                    event.target.classList.add('btn-outline-primary'); // Make it look "inactive"
+                    event.target.innerHTML = "Vote";
+                }
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            // Optionally, give feedback to the user
+            event.target.innerText = "Error!";
+        });
+    }
+    });
 </script>
 
 <!-- Load the Google Maps API using the secure key from our view -->
