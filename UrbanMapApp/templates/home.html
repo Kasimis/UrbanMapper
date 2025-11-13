@@ -69,35 +69,62 @@
 <!-- JavaScript for Google Maps functionality -->
 <script>
     let map;
-    let marker = null;
+    let submissionMarker = null;
+    let infoWindow;
+
     function initMap() {
         const athens = { lat: 37.983810, lng: 23.727539 };
 
-
         map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 13,
+            zoom: 12, 
             center: athens,
         });
 
+        infoWindow = new google.maps.InfoWindow();
+
+
         map.addListener("click", (event) => {
-            placeMarker(event.latLng);
+            placeSubmissionMarker(event.latLng);
+        });
+
+
+        const reportsData = JSON.parse('{{ reports_json|safe }}');
+
+        reportsData.forEach(report => {
+            const marker = new google.maps.Marker({
+                position: { lat: report.lat, lng: report.lng },
+                map: map,
+                title: report.title,
+
+            });
+            //marker info window
+            const contentString = `
+                <div>
+                    <h5>${report.title}</h5>
+                    <p><strong>Category:</strong> ${report.category}</p>
+                    <p>${report.description}</p>
+                    <img src="${report.photo_url}" alt="${report.title}" style="max-width: 200px; height: auto;">
+                </div>
+            `;
+
+            marker.addListener('click', () => {
+                infoWindow.setContent(contentString);
+                infoWindow.open(map, marker);
+            });
         });
     }
 
-    // marker moving function
-    function placeMarker(location) {
-        // If a marker already exists, remove it from the map
-        if (marker) {
-            marker.setMap(null);
+    // This function handles placing the marker for a NEW submission
+    function placeSubmissionMarker(location) {
+        if (submissionMarker) {
+            submissionMarker.setMap(null);
         }
-        marker = new google.maps.Marker({
+        submissionMarker = new google.maps.Marker({
             position: location,
             map: map,
         });
-        const lat = location.lat();
-        const lng = location.lng();
-        document.getElementById("id_latitude").value = lat;
-        document.getElementById("id_longitude").value = lng;
+        document.getElementById("id_latitude").value = location.lat();
+        document.getElementById("id_longitude").value = location.lng();
         document.querySelector('#reportForm button[type="submit"]').disabled = false;
     }
 </script>
