@@ -8,8 +8,8 @@ class Category(models.Model):
     description = models.TextField(blank=True, null=True, verbose_name="Περιγραφή")
 
     class Meta:
-        verbose_name = "Κατηγορία"
-        verbose_name_plural = "Κατηγορίες"
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
 
     def __str__(self):
         return self.name
