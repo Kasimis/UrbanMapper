@@ -4,7 +4,8 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from .models import Report, Category
 import json
-
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 
 def home(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -61,3 +62,16 @@ def home(request):
             'reports_json': reports_json,
         }
         return render(request, 'home.html', context)
+
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'register.html', {'form': form})
