@@ -41,7 +41,22 @@ def home(request):
     else:
         categories = Category.objects.all()
         reports = Report.objects.all()
+        pending_reports = Report.objects.exclude(status='RESOLVED')
 
+        # --- Top 5 Reports Logic ---
+        # 1. Calculate the score for each report
+        # We create a list of tuples: (report_object, score)
+        scored_reports = []
+        for report in pending_reports:
+            score = report.calculate_priority_score()
+            scored_reports.append((report, score))
+
+        # 2. Sort the list in descending order based on the score
+        # The key=lambda item: item[1] tells sort to use the second element (the score)
+        scored_reports.sort(key=lambda item: item[1], reverse=True)
+
+        # 3. Get just the top 5 report objects from the sorted list
+        top_5_reports = [item[0] for item in scored_reports[:5]]
         reports_data = []
         for report in reports:
             category_name = report.category.name if report.category else "No Category"
@@ -66,6 +81,7 @@ def home(request):
             'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY,
             'categories': categories,
             'reports_json': reports_json,
+            'top_5_reports': top_5_reports,
         }
         return render(request, 'home.html', context)
 

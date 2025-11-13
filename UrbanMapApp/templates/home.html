@@ -2,7 +2,7 @@
 {% block title %}Urban Problem Mapper{% endblock %}
 
 {% block content %}
-    <h1 class="mb-4">Urban Problem Mapping</h1>
+
     <div class="row">
         <!-- Map container -->
         <div class="col-lg-8">
@@ -35,7 +35,7 @@
 
                     <div class="mb-3">
                         <label for="id_description" class="form-label">Description</label>
-                        <textarea name="description" id="id_description" class="form-control" rows="3" required></textarea>
+                        <textarea name="description" id="id_description" class="form-control" rows="1" required></textarea>
                     </div>
 
                     <div class="mb-3">
@@ -59,6 +59,30 @@
                 </form>
                 </div>
             </div>
+                <!-- START: Add this new card for the Top 5 reports -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-warning text-dark">
+            <strong>Top 5 Urgent Reports</strong>
+        </div>
+        <div class="card-body p-0">
+            {% if top_5_reports %}
+                <ul class="list-group list-group-flush">
+                    {% for report in top_5_reports %}
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">{{ report.title }}</div>
+                                <small class="text-muted">{{ report.category.name|default:"No Category" }} | {{ report.votes.count }} votes</small>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">{{ report.calculate_priority_score }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="p-3 text-muted">No pending reports found.</p>
+            {% endif %}
+        </div>
+    </div>
+    <!-- END: New card -->
         </div>
     </div>
 {% endblock %}
