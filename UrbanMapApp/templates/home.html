@@ -71,7 +71,11 @@
     let map;
     let submissionMarker = null;
     let infoWindow;
-
+     const iconUrls = {
+            'PENDING': 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+            'IN_PROGRESS': 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+            'RESOLVED': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+        };
     function initMap() {
         const athens = { lat: 37.983810, lng: 23.727539 };
 
@@ -91,11 +95,12 @@
         const reportsData = JSON.parse('{{ reports_json|safe }}');
 
         reportsData.forEach(report => {
+            const iconUrl = iconUrls[report.status] || iconUrls['PENDING'];
             const marker = new google.maps.Marker({
                 position: { lat: report.lat, lng: report.lng },
                 map: map,
                 title: report.title,
-
+                icon: iconUrl
             });
             //marker info window
             const contentString = `

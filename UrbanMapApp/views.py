@@ -51,7 +51,8 @@ def home(request):
                 'title': report.title,
                 'description': report.description,
                 'category': category_name,
-                'photo_url': photo_url
+                'photo_url': photo_url,
+                'status': report.status,
             })
 
         reports_json = json.dumps(reports_data)
