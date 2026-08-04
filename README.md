@@ -43,6 +43,17 @@ The application implements several robust security mechanisms:
 
 ---
 
+## 📸 Screenshots
+
+### Main Interface
+![Main Interface](images/main-interface.png)
+
+### Map Report Popup
+![Map Report Popup](images/map-popup.png)
+
+### Admin Panel
+![Admin Panel](images/admin-panel.png)
+
 ## 🏗️ Architecture
 
 The project follows Django's Model-View-Template (MVT) architecture. 
