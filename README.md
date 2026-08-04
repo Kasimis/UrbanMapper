@@ -1,78 +1,65 @@
-# Urban Mapper
+# 🗺️ UrbanMapper
 
-Urban Mapper is a web application developed using Python and Django that provides
-a platform for managing and visualizing urban-related information through a
-database-driven web interface.
+A Django-based web application for reporting and prioritizing urban infrastructure issues using an interactive map interface.
 
-The project focuses on building a structured web application with backend logic,
-data management and dynamic interaction between users and stored information.
+Users can report problems such as damaged roads, vandalism, and infrastructure issues by selecting locations on a map, uploading photos, and providing descriptions. Reports can be voted on by the community to prioritize the most important problems requiring immediate attention.
 
-## Features
+---
 
-- Web-based user interface
-- Backend functionality developed with Django
-- Database-driven data management
-- Dynamic data handling through Django models
-- Structured application architecture following Django principles
+## ✨ Features
 
-## Technologies
+### 👤 User Functionality
+* **Authentication:** Secure user registration, login, and logout.
+* **Issue Reporting:** Submit urban issue reports with descriptions.
+* **Interactive Map:** Select report locations easily using Google Maps.
+* **Media Upload:** Upload images to document the reported issues.
+* **Community Voting:** Vote or unvote on existing reports to influence priority.
+* **Prioritized Feed:** View prioritized problems based on community votes and age.
 
-- Python
-- Django
-- HTML
-- CSS
-- JavaScript
-- SQLite / Database Management
+### 🛡️ Administration
+* **Django Admin Dashboard:** Full control over the application.
+* **User Management:** Manage user accounts and permissions.
+* **Category Management:** Create and manage report categories.
+* **Status Updates:** Update report status (`Pending` ➡️ `In Progress` ➡️ `Resolved`).
+* **Moderation:** Manage submitted reports and community votes.
 
-## Project Structure
+### 🔒 Security Features
+The application implements several robust security mechanisms:
+* Django authentication framework.
+* Password validation and secure password storage.
+* Session-based authentication & CSRF protection.
+* Role-based access control for administrative functions.
+* Database constraints preventing duplicate votes.
+* Secure handling of user-uploaded content.
 
-The application follows the Django Model-View-Template (MVT) architecture:
+---
 
-- Models:
-  Define the application's data structure and database interactions.
+## 🛠️ Technology Stack
 
-- Views:
-  Handle application logic and process user requests.
+* **Backend:** Python, Django 4.2
+* **Database:** SQLite
+* **Frontend:** HTML/CSS, JavaScript, Bootstrap
+* **Maps Integration:** Google Maps JavaScript API
 
-- Templates:
-  Provide the frontend interface presented to users.
+---
 
-## My Contribution
+## 🏗️ Architecture
 
-I developed the application as part of my Computer Science studies.
+The project follows Django's Model-View-Template (MVT) architecture. 
 
-My work included:
-
-- Designing the application structure using Django
-- Implementing backend functionality
-- Creating and managing database models
-- Connecting frontend components with backend logic
-- Testing application functionality and improving usability
-
-## Security Considerations
-
-During development, I focused on understanding secure web application practices,
-including:
-
-- Proper handling of user input
-- Database interaction through Django mechanisms
-- Understanding authentication and authorization concepts
-- Applying secure development principles
-
-## Screenshots
-
-## Future Improvements
-
-Possible future enhancements:
-
-- Improved authentication system
-- Additional data visualization features
-- Deployment using a production environment
-- Enhanced security controls
-
-## Author
-
-Panagiotis Kasimis
-
-GitHub:
-https://github.com/Kasimis
+**Main Directory Structure:**
+```text
+UrbanMapper
+│
+├── UrbanMapApp/
+│   ├── models.py
+│   ├── views.py
+│   ├── urls.py
+│   ├── admin.py
+│   └── templates/
+│
+├── UrbanMapper/
+│   ├── settings.py
+│   └── urls.py
+│
+└── manage.py
