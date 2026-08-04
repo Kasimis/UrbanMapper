@@ -49,7 +49,7 @@ The application implements several robust security mechanisms:
 ![Main Interface](images/main-interface.png)
 
 ### Map Report Popup
-![Map Report Popup](images/map-popup.png)
+![Map Report Popup](images/report-popup.png)
 
 ### Admin Panel
 ![Admin Panel](images/admin-panel.png)
